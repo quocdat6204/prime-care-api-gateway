@@ -1,0 +1,63 @@
+spring:
+  application:
+    name: api-gateway
+
+  cloud:
+    gateway:
+      server:
+        webflux:
+          routes:
+            - id: user-service-route
+              uri: lb://user-service
+              predicates:
+                - Path=/users/**, /authenticate/**
+              filters:
+                - name: AuthenticationFilter
+
+            - id: email-service-route
+              uri: lb://email-service
+              predicates:
+                - Path=/emails/**
+              filters:
+                - name: AuthenticationFilter
+
+            - id: payment-service-route
+              uri: lb://payment-service
+              predicates:
+                - Path=/api/vnpay/**
+              filters:
+                - name: AuthenticationFilter
+
+            - id: clinic-service-route
+              uri: lb://clinic-service
+              predicates:
+                - Path=/clinic/**, /internal/clinic/**
+              filters:
+                - name: AuthenticationFilter
+
+            - id: statistic-service-route
+              uri: lb://statistic-service
+              predicates:
+                - Path=/api/statistics/**
+              filters:
+                - name: AuthenticationFilter
+
+            - id: chatbot-service-route
+              uri: lb://chatbot-service
+              predicates:
+                - Path=/chatbot/**
+              filters:
+                - name: AuthenticationFilter
+
+server:
+  port: 9000
+
+eureka:
+  client:
+    service-url:
+      defaultZone: http://localhost:8761/eureka/
+    register-with-eureka: true
+    fetch-registry: true
+
+  instance:
+    prefer-ip-address: true
